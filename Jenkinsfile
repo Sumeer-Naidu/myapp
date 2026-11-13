@@ -2,6 +2,7 @@ pipeline {
     agent any
     environment {
         IMAGE = "sumeer16/myapp"
+        KUBECONFIG = "/var/lib/jenkins/.kube/config"
     }
     stages {
         stage('Checkout') {
@@ -21,11 +22,9 @@ pipeline {
         }
         stage('Deploy to Kubernetes') {
             steps {
-                withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
-                    sh 'sed -i "s|image:.*|image: $IMAGE:$BUILD_NUMBER|" deployment.yaml'
-                    sh 'kubectl apply -f deployment.yaml'
-                    sh 'kubectl rollout status deployment/myapp'
-                }
+                sh 'sed -i "s|image:.*|image: $IMAGE:$BUILD_NUMBER|" deployment.yaml'
+                sh 'kubectl apply -f deployment.yaml'
+                sh 'kubectl rollout status deployment/myapp'
             }
         }
     }
