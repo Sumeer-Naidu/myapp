@@ -5,7 +5,7 @@ pipeline {
     }
     stages {
         stage('Checkout') {
-            steps { git 'https://github.com/Sumeer-Naidu/myapp.git' }
+            steps { checkout scm }
         }
         stage('Build Docker Image') {
             steps { sh 'docker build -t $IMAGE:$BUILD_NUMBER .' }
