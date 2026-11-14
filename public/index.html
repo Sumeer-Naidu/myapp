@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MediCare Patient Records Portal</title>
+<style>
+  :root { --bg:#f3f6f8; --card:#fff; --ink:#14202b; --muted:#5a6b7a; --line:#d8e0e7; --teal:#0b6e8a; --soft:#dff1f6; --ok:#17803d; --okbg:#dcf3e3; --bad:#b42318; --badbg:#fde3e0; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family: system-ui, "Segoe UI", Roboto, sans-serif; line-height:1.55; }
+  header { background:var(--teal); color:#fff; padding:22px 16px; }
+  .wrap { max-width:980px; margin:0 auto; padding:0 16px; }
+  header .wrap { padding:0; }
+  header h1 { margin:0; font-size:26px; }
+  header p { margin:4px 0 0; opacity:.9; }
+  main { padding:24px 0 48px; }
+  h2 { font-size:19px; margin:32px 0 12px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:12px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:14px 16px; min-width:0; }
+  .card h3 { margin:0 0 4px; font-size:15px; }
+  .card p { margin:0; color:var(--muted); font-size:14px; }
+  .tag { display:inline-block; font-size:12px; font-weight:600; padding:2px 9px; border-radius:999px; background:var(--okbg); color:var(--ok); margin-bottom:8px; }
+  .live { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; }
+  .live .card b { display:block; font-size:18px; overflow-wrap:anywhere; }
+  .live .k { font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); }
+  .good { color:var(--ok); } .bad { color:var(--bad); }
+  .tablewrap { overflow-x:auto; background:var(--card); border:1px solid var(--line); border-radius:8px; }
+  table { width:100%; border-collapse:collapse; font-size:14px; }
+  th,td { text-align:left; padding:10px 14px; border-bottom:1px solid var(--line); white-space:nowrap; }
+  th { font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); }
+  tr:last-child td { border-bottom:0; }
+  .stages { display:flex; flex-wrap:wrap; gap:8px; padding:0; margin:0; list-style:none; }
+  .stages li { flex:1 1 120px; background:var(--card); border:1px solid var(--line); border-radius:8px; padding:10px 12px; font-size:14px; }
+  .stages li.sec { background:var(--soft); border-color:var(--teal); }
+  .stages b { display:block; }
+  .note { font-size:13px; color:var(--muted); margin-top:8px; }
+  code { background:var(--soft); padding:1px 5px; border-radius:4px; font-size:13px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <h1>MediCare Patient Records Portal</h1>
+    <p>Secure DevOps (DevSecOps) demo for a healthcare system</p>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <h2>Live security status of this running container</h2>
+  <div class="live" id="live">
+    <div class="card"><div class="k">Status</div><b>Loading...</b></div>
+  </div>
+  <p class="note">These values come from the running pod through <code>/api/security</code>. The database password itself is never shown.</p>
+
+  <h2>Security measures implemented</h2>
+  <div class="grid">
+    <div class="card"><span class="tag">Applied</span><h3>Secrets kept out of code</h3><p>The database password is stored in a Kubernetes Secret (<code>patient-db-secret</code>) and injected into the pod at runtime.</p></div>
+    <div class="card"><span class="tag">Applied</span><h3>Non-root container</h3><p>The Docker image runs as user 1000 and the pod sets <code>runAsUser: 1000</code>, so a compromised app has limited power.</p></div>
+    <div class="card"><span class="tag">Applied</span><h3>No privilege escalation</h3><p>The pod sets <code>allowPrivilegeEscalation: false</code>, so processes cannot gain extra rights.</p></div>
+    <div class="card"><span class="tag">Applied</span><h3>Image vulnerability scan</h3><p>Trivy scans every Docker image for HIGH and CRITICAL vulnerabilities before it is pushed and deployed.</p></div>
+    <div class="card"><span class="tag">Applied</span><h3>Secret scan of source code</h3><p>Trivy checks the repository for leaked passwords and keys, and fails the build if it finds any.</p></div>
+    <div class="card"><span class="tag">Applied</span><h3>Protected pipeline credentials</h3><p>Docker Hub login lives in the Jenkins credential store and is masked in build logs.</p></div>
+  </div>
+
+  <h2>DevSecOps pipeline</h2>
+  <ol class="stages">
+    <li><b>Checkout</b>Pull code from Git</li>
+    <li class="sec"><b>Secret scan</b>Find leaked keys</li>
+    <li><b>Build</b>Docker image</li>
+    <li class="sec"><b>Image scan</b>Trivy CVE check</li>
+    <li><b>Push</b>Docker Hub</li>
+    <li><b>Deploy</b>Kubernetes, hardened pod</li>
+  </ol>
+  <p class="note">Highlighted stages are the security gates. If a gate fails, the pipeline stops and nothing reaches production.</p>
+
+  <h2>Why this matters for healthcare</h2>
+  <div class="grid">
+    <div class="card"><h3>Confidentiality</h3><p>Only authorized staff should see patient records. Secrets and access are locked down.</p></div>
+    <div class="card"><h3>Integrity</h3><p>Records must not be changed without a trace. Signed, scanned images prevent tampered software.</p></div>
+    <div class="card"><h3>Compliance</h3><p>Supports HIPAA, GDPR and India's DPDP Act by finding weaknesses before patient data is exposed.</p></div>
+  </div>
+
+  <h2>Patient records (sample data, masked)</h2>
+  <div class="tablewrap">
+    <table>
+      <thead><tr><th>Patient ID</th><th>Name</th><th>Phone</th><th>Ward</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>P-1042</td><td>R*** K***</td><td>98******21</td><td>Cardiology</td><td>Admitted</td></tr>
+        <tr><td>P-1043</td><td>S*** M***</td><td>97******08</td><td>Orthopedics</td><td>Under observation</td></tr>
+        <tr><td>P-1044</td><td>A*** N***</td><td>99******54</td><td>General</td><td>Discharged</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">All data on this page is fictional sample data. Identifying fields are masked, which is a standard way to limit exposure of patient information.</p>
+
+</main>
+
+<script>
+  fetch('/api/security')
+    .then(function (r) { return r.json(); })
+    .then(function (d) {
+      function ok(v, yes, no) { return v ? '<b class="good">' + yes + '</b>' : '<b class="bad">' + no + '</b>'; }
+      document.getElementById('live').innerHTML =
+        '<div class="card"><div class="k">Pod name</div><b>' + d.pod + '</b></div>' +
+        '<div class="card"><div class="k">Running as user ID</div><b>' + d.runningAsUid + '</b></div>' +
+        '<div class="card"><div class="k">Non-root</div>' + ok(d.nonRoot, 'Yes, non-root', 'No, running as root') + '</div>' +
+        '<div class="card"><div class="k">DB password from Secret</div>' + ok(d.dbPasswordLoadedFromSecret, 'Loaded (value hidden)', 'Not loaded') + '</div>' +
+        '<div class="card"><div class="k">Node.js</div><b>' + d.nodeVersion + '</b></div>';
+    })
+    .catch(function () {
+      document.getElementById('live').innerHTML = '<div class="card"><div class="k">Status</div><b class="bad">Could not reach /api/security</b></div>';
+    });
+</script>
+</body>
+</html>
