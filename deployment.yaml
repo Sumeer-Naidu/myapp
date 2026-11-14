@@ -17,6 +17,15 @@ spec:
         image: sumeer16/myapp:latest
         ports:
         - containerPort: 3000
+        securityContext:
+          runAsUser: 1000
+          allowPrivilegeEscalation: false
+        env:
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: patient-db-secret
+              key: DB_PASSWORD
 ---
 apiVersion: v1
 kind: Service

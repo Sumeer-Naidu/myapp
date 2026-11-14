@@ -8,8 +8,14 @@ pipeline {
         stage('Checkout') {
             steps { checkout scm }
         }
+        stage('Secret Scan') {
+            steps { sh 'trivy fs --scanners secret --exit-code 1 .' }
+        }
         stage('Build Docker Image') {
             steps { sh 'docker build -t $IMAGE:$BUILD_NUMBER .' }
+        }
+        stage('Image Scan') {
+            steps { sh 'trivy image --severity HIGH,CRITICAL --exit-code 0 $IMAGE:$BUILD_NUMBER' }
         }
         stage('Push Image') {
             steps {
